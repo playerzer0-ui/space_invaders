@@ -15,7 +15,7 @@ namespace space_invaders
         //private Canvas canvas;
 
         private Player player;
-        private Bullet bullet;
+        private Alien alien;
 
         public Game1()
         {
@@ -44,7 +44,7 @@ namespace space_invaders
             // TODO: use this.Content to load your game content here
             //canvas = new Canvas(_graphics.GraphicsDevice, 1280, 720);
             player = new Player();
-            
+            alien = new Alien(new Vector2(500, 500));
         }
 
         protected override void Update(GameTime gt)
@@ -56,15 +56,27 @@ namespace space_invaders
             // TODO: Add your update logic here
             for(int i = 0; i < index; i++)
             {
-                Bullet.bullets[i].Update(gt);
-                if (Bullet.bullets[i].Pos.Y < 30)
+                if (alien.Rect.Intersects(Bullet.bullets[i].Rect.Rect))
+                {
+                    alien.Die();
+                    Bullet.bullets.RemoveAt(i);
+                    index--;
+                }
+                else if (Bullet.bullets[i].Pos.Y < 30)
                 {
                     Bullet.bullets.RemoveAt(i);
                     index--;
                 }
+                else
+                {
+                    Bullet.bullets[i].Update(gt);
+                }
             }
 
+            
+
             player.Update(gt);
+            alien.Update(gt);
             base.Update(gt);
         }
 
@@ -78,6 +90,7 @@ namespace space_invaders
             {
                 Bullet.bullets[i].Draw();
             }
+            alien.Draw();
                 player.Draw();
             _spriteBatch.End();
 

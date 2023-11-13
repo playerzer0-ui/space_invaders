@@ -14,9 +14,11 @@ namespace space_invaders.entities
         private int speed = 200;
         private float shootTimer = 0;
         private float maxShootTimer = 1;
+        private CollisionRect rect;
 
         public Player()
         {
+            rect = new CollisionRect((int)pos.X, (int)pos.Y, 60, 10);
             anim = new SpriteAnimation("player", 5, 4);
             pos = new Vector2(640, 630);
         }
@@ -43,7 +45,8 @@ namespace space_invaders.entities
 
             //oState = kState;
             anim.Position = pos;
-            
+            rect.UpdateRect((int)pos.X, (int)pos.Y);
+            rect.SetOffsetExtra(0, 5);
             //anim.Update(gt);
         }
 
@@ -65,6 +68,7 @@ namespace space_invaders.entities
         public void Draw()
         {
             anim.Draw(Globals.spriteBatch);
+            rect.DrawRect(new Color(255, 0, 0, 128));
         }
 
     }
