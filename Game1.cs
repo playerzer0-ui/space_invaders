@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using NodeTesting.models;
 using space_invaders.entities;
+using System;
 
 namespace space_invaders
 {
@@ -43,17 +44,26 @@ namespace space_invaders
             // TODO: use this.Content to load your game content here
             //canvas = new Canvas(_graphics.GraphicsDevice, 1280, 720);
             player = new Player();
-            bullet = new Bullet(new Vector2(640, 610));
+            
         }
 
         protected override void Update(GameTime gt)
         {
-
+            int index = Bullet.bullets.Count;
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
             // TODO: Add your update logic here
-            bullet.Update(gt);
+            for(int i = 0; i < index; i++)
+            {
+                Bullet.bullets[i].Update(gt);
+                if (Bullet.bullets[i].Pos.Y < 30)
+                {
+                    Bullet.bullets.RemoveAt(i);
+                    index--;
+                }
+            }
+
             player.Update(gt);
             base.Update(gt);
         }
@@ -64,8 +74,11 @@ namespace space_invaders
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            bullet.Draw();
-            player.Draw();
+            for (int i = 0; i < Bullet.bullets.Count; i++)
+            {
+                Bullet.bullets[i].Draw();
+            }
+                player.Draw();
             _spriteBatch.End();
 
             base.Draw(gameTime);

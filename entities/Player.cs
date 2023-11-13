@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using NodeTesting.models;
+using System.Threading;
 
 namespace space_invaders.entities
 {
@@ -11,6 +12,8 @@ namespace space_invaders.entities
         private Vector2 pos;
         private SpriteAnimation anim;
         private int speed = 200;
+        private float shootTimer = 0;
+        private float maxShootTimer = 1;
 
         public Player()
         {
@@ -26,6 +29,8 @@ namespace space_invaders.entities
             KeyboardState kState = Keyboard.GetState();
             float dt = (float)gt.ElapsedGameTime.TotalSeconds;
 
+            ShootBullet(gt, kState);
+
             if (kState.IsKeyDown(Keys.Right) && pos.X < 1216)
             {
                 pos.X += speed * dt;
@@ -34,10 +39,27 @@ namespace space_invaders.entities
             {
                 pos.X -= speed * dt;
             }
+            
 
+            //oState = kState;
             anim.Position = pos;
             
             //anim.Update(gt);
+        }
+
+        public void ShootBullet(GameTime gt, KeyboardState kState)
+        {
+            float dt = (float)gt.ElapsedGameTime.TotalSeconds;
+
+            shootTimer -= dt;
+            if(shootTimer < 0)
+            {
+                if (kState.IsKeyDown(Keys.Space))
+                {
+                    Bullet.bullets.Add(new Bullet(new Vector2(pos.X, pos.Y - 20)));
+                    shootTimer = maxShootTimer;
+                }
+            }
         }
 
         public void Draw()

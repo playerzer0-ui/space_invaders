@@ -12,13 +12,14 @@ namespace space_invaders.entities
     public class Bullet
     {
         private Vector2 pos;
-        private int speed = 200;
-        public static List<Bullet> bullets;
+        private int speed = 600;
+        public static List<Bullet> bullets = new List<Bullet>();
         private SpriteAnimation anim;
+
+        public Vector2 Pos { get => pos; set => pos = value; }
 
         public Bullet(Vector2 pos)
         {
-            bullets = new List<Bullet>();
             anim = new SpriteAnimation("bullet", 2, 4);
             this.pos = pos;
         }
