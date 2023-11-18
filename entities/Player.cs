@@ -68,7 +68,7 @@ namespace space_invaders.entities
         public void Draw()
         {
             anim.Draw(Globals.spriteBatch);
-            rect.DrawRect(new Color(255, 0, 0, 128));
+            // rect.DrawRect(new Color(255, 0, 0, 128));
         }
 
     }

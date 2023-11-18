@@ -15,7 +15,7 @@ namespace space_invaders
         //private Canvas canvas;
 
         private Player player;
-        private Alien alien;
+        
 
         public Game1()
         {
@@ -44,39 +44,64 @@ namespace space_invaders
             // TODO: use this.Content to load your game content here
             //canvas = new Canvas(_graphics.GraphicsDevice, 1280, 720);
             player = new Player();
-            alien = new Alien(new Vector2(500, 500));
+            int x = 350;
+            int y = 100;
+            for (int i = 0; i < 16; i++)
+            {
+                if(i % 8 == 0 && i > 0)
+                {
+                    x = 350;
+                    y += 60;
+                }
+                Alien.aliens.Add(new Alien(new Vector2(x, y)));
+                x += 80;
+            }
         }
 
         protected override void Update(GameTime gt)
         {
-            int index = Bullet.bullets.Count;
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
-            for(int i = 0; i < index; i++)
+            for (int i = 0; i < Bullet.bullets.Count; i++)
             {
-                if (alien.Rect.Intersects(Bullet.bullets[i].Rect.Rect))
+                Bullet.bullets[i].Update(gt);
+            }
+            for (int i = 0; i < Alien.aliens.Count; i++)
+            {
+                if (Alien.aliens[i].Pos.X > 1080)
                 {
-                    alien.Die();
-                    Bullet.bullets.RemoveAt(i);
-                    index--;
+                    Alien.aliens.ForEach(alien => { alien.Invert = true; });
                 }
-                else if (Bullet.bullets[i].Pos.Y < 30)
+                if (Alien.aliens[i].Pos.X < 200)
                 {
-                    Bullet.bullets.RemoveAt(i);
-                    index--;
+                    Alien.aliens.ForEach(alien => { alien.Invert = false; });
                 }
-                else
+                Alien.aliens[i].Update(gt);
+            }
+
+            // TODO: Add your update logic here
+            foreach (Bullet bullet in Bullet.bullets)
+            {
+                if (bullet.Pos.Y < 30)
                 {
-                    Bullet.bullets[i].Update(gt);
+                    bullet.Collided = true;
+                }
+                foreach (Alien alien in Alien.aliens)
+                {
+                    if (bullet.Rect.Intersects(alien.Rect.Rect))
+                    {
+                        bullet.Collided = true;
+                        alien.Die();
+                    }
+                    
                 }
             }
 
+            Bullet.bullets.RemoveAll(b => b.Collided);
+            Alien.aliens.RemoveAll(a => a.Dead);
             
-
             player.Update(gt);
-            alien.Update(gt);
             base.Update(gt);
         }
 
@@ -90,7 +115,10 @@ namespace space_invaders
             {
                 Bullet.bullets[i].Draw();
             }
-            alien.Draw();
+            for(int i = 0; i < Alien.aliens.Count; i++)
+            {
+                Alien.aliens[i].Draw();
+            }
                 player.Draw();
             _spriteBatch.End();
 

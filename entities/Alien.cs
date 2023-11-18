@@ -15,14 +15,26 @@ namespace space_invaders.entities
         private SpriteAnimation[] anims = new SpriteAnimation[2];
         private SpriteAnimation anim;
         private CollisionRect rect;
+
+        private bool invert = false;
+        private bool collided = false;
+        private bool dead = false;
+
         public static List<Alien> aliens = new List<Alien>();
 
-        private int moveTimer = 1;
-        private intmaxMoveTimer = 1;
+        private float moveTimer = 1;
+        private float maxMoveTimer = 1;
+
+        private float dieTimer = 1f;
+        private float maxDieTimer = 1f;
 
 
         public CollisionRect Rect { get => rect; set => rect = value; }
         public Vector2 Pos { get => pos; set => pos = value; }
+
+        public bool Collided { get => collided; set => collided = value; }
+        public bool Dead { get => dead; set => dead = value; }
+        public bool Invert { get => invert; set => invert = value; }
 
         public Alien(Vector2 pos) 
         {
@@ -34,8 +46,47 @@ namespace space_invaders.entities
             anim = anims[0];
         }
 
+        public void Descend()
+        {
+            pos.Y += 60;
+        }
+
         public void Update(GameTime gt)
         {
+            float dt = (float)gt.ElapsedGameTime.TotalSeconds;
+
+            if (collided)
+            {
+                rect.SetOffsetExtra(-200, -200);
+
+                dieTimer -= dt;
+                if (dieTimer < 0)
+                {
+                    dead = true;
+                    dieTimer = maxDieTimer;
+                }
+            }
+            else
+            {
+                moveTimer -= dt;
+
+                if(moveTimer < 0)
+                {
+                    if (invert)
+                    {
+                        pos.X -= 20;
+                        
+                    } 
+                    else
+                    {
+                        pos.X += 20;
+                        
+                    }
+                    moveTimer = maxMoveTimer;
+                }
+
+
+            }
 
             rect.UpdateRect((int)pos.X, (int)pos.Y);
             anim.Position = pos;
@@ -49,7 +100,11 @@ namespace space_invaders.entities
 
         public void Die()
         {
-            anim = anims[1];
+            if (!collided)
+            {
+                collided = true;
+                anim = anims[1];
+            }
         }
     }
 }

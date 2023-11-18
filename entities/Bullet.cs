@@ -12,13 +12,15 @@ namespace space_invaders.entities
     public class Bullet
     {
         private Vector2 pos;
-        private int speed = 600;
+        private int speed = 800;
         public static List<Bullet> bullets = new List<Bullet>();
+        private bool collided = false;
         private SpriteAnimation anim;
         private CollisionRect rect;
 
         public Vector2 Pos { get => pos; set => pos = value; }
         public CollisionRect Rect { get => rect; set => rect = value; }
+        public bool Collided { get => collided; set => collided = value; }
 
         public Bullet(Vector2 pos)
         {
