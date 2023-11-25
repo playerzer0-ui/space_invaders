@@ -20,10 +20,14 @@ namespace space_invaders.entities
         private bool collided = false;
         private bool dead = false;
 
+        public static bool canGoDown = false;
         public static List<Alien> aliens = new List<Alien>();
 
-        private float moveTimer = 1;
-        private float maxMoveTimer = 1;
+        private float moveTimer = 0.5f;
+        private float maxMoveTimer = 0.5f;
+
+        private float downTimer = 0.5f;
+        private float maxDownTimer = 0.5f;
 
         private float dieTimer = 1f;
         private float maxDieTimer = 1f;
@@ -46,10 +50,19 @@ namespace space_invaders.entities
             anim = anims[0];
         }
 
-        public void Descend()
+        public void Descend(GameTime gt)
         {
-            pos.Y += 60;
-        }
+			float dt = (float)gt.ElapsedGameTime.TotalSeconds;
+
+            downTimer -= dt;
+
+            if(downTimer < 0)
+            {
+                pos.Y += 60;
+                downTimer = maxDownTimer;
+                canGoDown = false;
+            }
+		}
 
         public void Update(GameTime gt)
         {
@@ -68,25 +81,26 @@ namespace space_invaders.entities
             }
             else
             {
-                moveTimer -= dt;
-
-                if(moveTimer < 0)
+                if (!canGoDown)
                 {
-                    if (invert)
-                    {
-                        pos.X -= 20;
-                        
-                    } 
-                    else
-                    {
-                        pos.X += 20;
-                        
-                    }
-                    moveTimer = maxMoveTimer;
-                }
+					moveTimer -= dt;
 
+					if (moveTimer < 0)
+					{
+						if (invert)
+						{
+							pos.X -= 20;
 
-            }
+						}
+						else
+						{
+							pos.X += 20;
+
+						}
+						moveTimer = maxMoveTimer;
+					}
+				}
+			}
 
             rect.UpdateRect((int)pos.X, (int)pos.Y);
             anim.Position = pos;

@@ -60,24 +60,39 @@ namespace space_invaders
 
         protected override void Update(GameTime gt)
         {
+
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            //update the things
             for (int i = 0; i < Bullet.bullets.Count; i++)
             {
                 Bullet.bullets[i].Update(gt);
             }
             for (int i = 0; i < Alien.aliens.Count; i++)
             {
-                if (Alien.aliens[i].Pos.X > 1080)
-                {
-                    Alien.aliens.ForEach(alien => { alien.Invert = true; });
-                }
-                if (Alien.aliens[i].Pos.X < 200)
-                {
-                    Alien.aliens.ForEach(alien => { alien.Invert = false; });
-                }
                 Alien.aliens[i].Update(gt);
+			}
+
+            //invert if hit border
+            for(int i = 0; i < Alien.aliens.Count; i++)
+            {
+				if (Alien.aliens[i].Pos.X > 1080)
+				{
+                    Alien.canGoDown = true;
+					Alien.aliens.ForEach(alien => { alien.Invert = true; });
+				}
+				if (Alien.aliens[i].Pos.X < 200)
+				{
+					Alien.canGoDown = true;
+					Alien.aliens.ForEach(alien => { alien.Invert = false; });
+				}
+			}
+
+            if (Alien.canGoDown)
+            {
+                Alien.aliens.ForEach(alien => { alien.Descend(gt); });
+                Alien.canGoDown = false;
             }
 
             // TODO: Add your update logic here
